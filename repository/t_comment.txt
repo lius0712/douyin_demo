@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS `t_comment`;
+CREATE TABLE t_comment (
+	cid INT AUTO_INCREMENT COMMENT '评论id',
+	video_uid INT NOT NULL COMMENT '发布视频用户id',
+	comment_uid INT NOT NULL COMMENT '评论用户id',
+	comment varchar(100) COMMENT '评论内容',
+	create_date varchar(40) COMMENT '评论时间',
+	PRIMARY KEY (cid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

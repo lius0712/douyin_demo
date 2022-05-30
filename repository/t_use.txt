@@ -1,0 +1,12 @@
+CREATE DATABASE douyin character SET utf8;
+
+DROP TABLE IF EXISTS `t_user`;
+CREATE TABLE t_user (
+	uid INT AUTO_INCREMENT COMMENT '用户id',
+	username VARCHAR(40) NOT NULL UNIQUE COMMENT '用户名',
+	password CHAR(48) NOT NULL COMMENT '密码',
+	follow_count INT DEFAULT '0' COMMENT '关注总数',
+	follower_count INT DEFAULT '0' COMMENT '粉丝总数',
+	is_follow tinyint DEFAULT '0' COMMENT '是否关注：0-未关注，1-已关注',
+	PRIMARY KEY (uid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

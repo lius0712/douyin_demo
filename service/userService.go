@@ -24,9 +24,6 @@ func (u *UserRegisterService) Register() error {
 
 	err := repository.DB.Create(&user).Error
 
-	if err != nil {
-		panic(err)
-	}
 	return err
 }
 
@@ -36,7 +33,7 @@ func (u *UserInfo) UserLogin() (entity.User, error) {
 	return user, err
 }
 
-func (u *UserInfo) UserInfo() (entity.User, error) {
+func (u *UserInfo) UserInfoByName() (entity.User, error) {
 	var user entity.User
 	err := repository.DB.First(&user, "username=?", u.Username).Error
 	return user, err

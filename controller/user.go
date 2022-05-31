@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
-
+  
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
@@ -119,7 +119,8 @@ func UserInfo(c *gin.Context) {
 			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		})
 	} else {
-		fmt.Println(user)
+		//fmt.Println(user)
+		//user.Name = token
 		c.JSON(http.StatusOK, UserResponse{
 			Response: Response{StatusCode: 0},
 			User:     user,

@@ -16,6 +16,10 @@ type FeedResponse struct {
 
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
+	//token := c.Query("token")
+	//fmt.Println("!!!!")
+	//fmt.Println(token)
+	//fmt.Println("!!!")
 	var videos []entity.Video
 	var err error
 	videos, err = service.VideoInfoAll()
@@ -32,7 +36,7 @@ func Feed(c *gin.Context) {
 	var errUserItem error
 	var UserItem entity.User
 	for i, videoItem := range videos {
-		userItemName := videoItem.Author //获取视频作者用户名
+		userItemName := videoItem.Author        //获取视频作者用户名
 		userItemInfoByName := service.UserInfo{ //根据作者用户名查找用户信息
 			Username: userItemName,
 		}

@@ -16,6 +16,7 @@ type VideoListResponse struct {
 
 // Publish check token then save upload file to public directory
 func Publish(c *gin.Context) {
+  
 	username := c.GetString("username")
 
 	userByNameSelect := service.UserInfo{ //这里token为用户名，根据用户名进行查找，后续进行优化
@@ -59,7 +60,7 @@ func Publish(c *gin.Context) {
 		Author:    user.Name,
 		PlayerUrl: playerUrl,
 		CoverUrl:  coverUrl,
-		Title:     "Test video",
+		Title:     title,
 	}
 
 	err = videoInsertService.VideoInsert()

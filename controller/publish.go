@@ -17,6 +17,7 @@ type VideoListResponse struct {
 // Publish check token then save upload file to public directory
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
+	title := c.Query("title")
 	//fmt.Println(token)
 
 	userByNameSelect := service.UserInfo{ //这里token为用户名，根据用户名进行查找，后续进行优化
@@ -60,7 +61,7 @@ func Publish(c *gin.Context) {
 		Author:    user.Name,
 		PlayerUrl: playerUrl,
 		CoverUrl:  coverUrl,
-		Title:     "Test video",
+		Title:     title,
 	}
 
 	err = videoInsertService.VideoInsert()
@@ -79,6 +80,8 @@ func Publish(c *gin.Context) {
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
 	token := c.Query("token")
+	//AuthorId := c.Query("user_id") //指的是视频作者id,小修中...
+	//fmt.Println(AuthorId)
 	userQuery := service.UserInfo{
 		Username: token,
 	}

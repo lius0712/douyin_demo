@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
@@ -92,6 +91,10 @@ func Login(c *gin.Context) {
 
 func UserInfo(c *gin.Context) {
 	token := c.Query("token")
+	//userId := c.Query("user_id") //小修中...
+	//fmt.Println("&&&&&&&&&&&&&&&&&")
+	//fmt.Println(userId)
+	//fmt.Println("&&&&&&&&&&&&&&&&&")
 	var user entity.User
 	var err error
 	userInfo := service.UserInfo{Username: token}
@@ -101,7 +104,8 @@ func UserInfo(c *gin.Context) {
 			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		})
 	} else {
-		fmt.Println(user)
+		//fmt.Println(user)
+		//user.Name = token
 		c.JSON(http.StatusOK, UserResponse{
 			Response: Response{StatusCode: 0},
 			User:     user,

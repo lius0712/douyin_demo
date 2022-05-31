@@ -24,9 +24,6 @@ func (u *UserRegisterService) Register() error {
 
 	err := repository.DB.Create(&user).Error
 
-	if err != nil {
-		panic(err)
-	}
 	return err
 }
 

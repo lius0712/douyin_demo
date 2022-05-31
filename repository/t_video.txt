@@ -4,8 +4,15 @@ CREATE TABLE t_video (
 	author VARCHAR(40) NOT NULL COMMENT '发布视频作者',
 	player_url varchar(100) COMMENT '播放链接',
 	cover_url varchar(100) COMMENT '播放路径',
+<<<<<<< HEAD
 	favorite_count int COMMENT '喜爱数',
               comment_count int COMMENT '评论数',
 	is_favorite tinyint DEFAULT '0' COMMENT '是否喜爱：0-未喜爱，1-喜爱',
+=======
+	title varchar(120) COMMENT '视频标题',
+	favorite_count int COMMENT '喜爱数',
+              comment_count int COMMENT '评论数',
+	is_favorite tinyint DEFAULT '0' COMMENT '作者是否喜爱该作品：0-未喜爱，1-喜爱',
+>>>>>>> dev_ls
 	PRIMARY KEY (vid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -29,13 +29,13 @@ func Register(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 
-	userByNameService := service.UserInfo{ //根据用户进行查找
+	userByNameService := service.UserInfo{ //根据用户名进行查找
 		Username: username,
 	}
 
-	_, errSelect := userByNameService.UserInfo()
+	_, errSelect := userByNameService.UserInfoByName()
 
-	if errSelect == nil {
+	if errSelect == nil { //如果存在该用户名
 		c.JSON(http.StatusOK, UserRegisterResponse{
 			Response: Response{StatusCode: 1, StatusMsg: "用户名已存在！"},
 		})
@@ -56,7 +56,7 @@ func Register(c *gin.Context) {
 			userInfo := service.UserInfo{
 				Username: token,
 			}
-			user, _ := userInfo.UserInfo()
+			user, _ := userInfo.UserInfoByName()
 			c.JSON(http.StatusOK, UserRegisterResponse{
 				Response: Response{StatusCode: 0},
 				UserId:   user.ID,
@@ -95,7 +95,7 @@ func UserInfo(c *gin.Context) {
 	var user entity.User
 	var err error
 	userInfo := service.UserInfo{Username: token}
-	user, err = userInfo.UserInfo()
+	user, err = userInfo.UserInfoByName()
 	if err != nil {
 		c.JSON(http.StatusOK, UserResponse{
 			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},

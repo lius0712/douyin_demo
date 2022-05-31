@@ -36,7 +36,7 @@ func (u *UserInfo) UserLogin() (entity.User, error) {
 	return user, err
 }
 
-func (u *UserInfo) UserInfo() (entity.User, error) {
+func (u *UserInfo) UserInfoByName() (entity.User, error) {
 	var user entity.User
 	err := repository.DB.First(&user, "username=?", u.Username).Error
 	return user, err

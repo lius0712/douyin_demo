@@ -5,14 +5,6 @@ import (
 	"github.com/RaymondCode/simple-demo/repository"
 )
 
-<<<<<<< HEAD
-=======
-
-import (
-	"github.com/RaymondCode/simple-demo/entity"
-	"github.com/RaymondCode/simple-demo/repository"
-)
-
 type VideoInsertInfo struct {
 	Author    string
 	PlayerUrl string
@@ -49,4 +41,3 @@ func VideoInfoAll() ([]entity.Video, error) {
 	err := repository.DB.Find(&video).Error
 	return video, err
 }
->>>>>>> dev_ls

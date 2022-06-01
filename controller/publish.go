@@ -20,7 +20,7 @@ func Publish(c *gin.Context) {
 	username := c.GetString("username")
 	title := c.PostForm("title")
 
-	userByNameSelect := service.UserInfo{ //这里token为用户名，根据用户名进行查找，后续进行优化
+	userByNameSelect := service.UserInfo{
 		Username: username,
 	}
 	user, errUser := userByNameSelect.UserInfoByName()

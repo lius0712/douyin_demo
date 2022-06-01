@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -20,33 +21,37 @@ type CommentActionResponse struct {
 
 // CommentAction no practical effect, just check if token is valid
 func CommentAction(c *gin.Context) {
-	token := c.Query("token")
-	userId, err1 := strconv.ParseInt(c.Query("user_id"), 10, 64)
-	if err1 != nil {
-		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "数据转化错误"})
-		return
-	}
+	username := c.GetString("username") //用户鉴权token
+	//username := c.Query("token")
+	fmt.Println(username)
+	//fmt.Println(c.Query("user_id")) // 接口中无user_id
+	fmt.Println(c.Query("video_id"))
+	//userId, err1 := strconv.ParseInt(c.Query("user_id"), 10, 64) //将字符类型转化成整形
+	//if err1 != nil {
+	//	c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "数据转化错误"})
+	//	return
+	//}
 	videoId, err2 := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	if err2 != nil {
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "数据转化错误"})
 		return
 	}
-	actionType := c.Query("action_type")
+	actionType := c.Query("action_type") //发布评论1， 删除评论2
 
 	userInfoByName := service.UserInfo{
-		Username: token,
+		Username: username,
 	}
 
-	_, err := userInfoByName.UserInfoByName()
+	entityUser, err := userInfoByName.UserInfoByName()
 	if err != nil {
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 		return
 	}
 
 	if actionType == "1" { //发布评论
-		text := c.Query("comment_text")
-		commentInsertInfo := service.CommentInsertInfo{
-			UserId:     userId,
+		text := c.Query("comment_text") //评论内容
+		commentInsertInfo := service.CommentInfo{
+			UserId:     entityUser.ID,
 			VideoId:    videoId,
 			Comment:    text,
 			CreateDate: time.Now().String(),
@@ -57,25 +62,52 @@ func CommentAction(c *gin.Context) {
 			return
 		}
 
+		commentQueryInfo := service.CommentInfo{
+			UserId:  entityUser.ID,
+			VideoId: videoId,
+		}
+
+		entityComment, errQuery := commentQueryInfo.CommentInfoByVideoUidAndCommentUid()
+		if errQuery != nil {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: 1,
+				StatusMsg:  "Comment query failed",
+			})
+		}
+
+		var user User
+		user.Id = entityUser.ID
+		user.Name = entityUser.Name
+		user.FollowCount = entityUser.FollowCount
+		user.FollowerCount = entityUser.FollowerCount
+		user.IsFollow = entityUser.IsFollow
+
+		c.JSON(http.StatusOK, CommentActionResponse{
+			Comment: Comment{
+				Id:         entityComment.ID,
+				User:       user,
+				Content:    entityComment.Comment,
+				CreateDate: entityComment.CreateDate,
+			},
+		})
+	} else { //删除评论
+		commentId, err := strconv.ParseInt(c.Query("comment_id"), 10, 64)
+		if err != nil {
+			c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "数据转化错误"})
+			return
+		}
+		commentInfoDelete := service.CommentInfo{Cid: commentId}
+		errDelete := commentInfoDelete.DeleteCommentByCid()
+
+		if errDelete != nil {
+			c.JSON(http.StatusOK, Response{
+				StatusCode: 0,
+				StatusMsg:  "delete comment failed!",
+			})
+			return
+		}
 		c.JSON(http.StatusOK, Response{StatusCode: 0})
 	}
-
-	//if user, exist := usersLoginInfo[token]; exist {
-	//	if actionType == "1" {
-	//		text := c.Query("comment_text")
-	//		c.JSON(http.StatusOK, CommentActionResponse{Response: Response{StatusCode: 0},
-	//			Comment: Comment{
-	//				Id:         1,
-	//				User:       user,
-	//				Content:    text,
-	//				CreateDate: "05-01",
-	//			}})
-	//		return
-	//	}
-	//	c.JSON(http.StatusOK, Response{StatusCode: 0})
-	//} else {
-	//	c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
-	//}
 }
 
 // CommentList all videos have same demo comment list

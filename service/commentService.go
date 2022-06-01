@@ -5,7 +5,8 @@ import (
 	"github.com/RaymondCode/simple-demo/repository"
 )
 
-type CommentInsertInfo struct {
+type CommentInfo struct {
+	Cid        int64
 	UserId     int64
 	VideoId    int64
 	Comment    string
@@ -13,7 +14,8 @@ type CommentInsertInfo struct {
 }
 
 //将评论插入数据库
-func (c *CommentInsertInfo) CommentInsert() error {
+
+func (c *CommentInfo) CommentInsert() error {
 	var comment entity.Comment
 	comment.Vid = c.VideoId
 	comment.Uid = c.UserId
@@ -22,5 +24,20 @@ func (c *CommentInsertInfo) CommentInsert() error {
 
 	err := repository.DB.Create(&comment).Error
 
+	return err
+}
+
+//通过videoUid和commentUid来查询评论id
+
+func (c *CommentInfo) CommentInfoByVideoUidAndCommentUid() (entity.Comment, error) {
+	var comment entity.Comment
+	err := repository.DB.Where(&entity.Comment{Uid: c.UserId, Vid: c.VideoId}).First(&comment).Error
+	return comment, err
+}
+
+//通过commentId来删除评论内容
+
+func (c *CommentInfo) DeleteCommentByCid() error {
+	err := repository.DB.Delete(&entity.Comment{ID: c.Cid}).Error
 	return err
 }

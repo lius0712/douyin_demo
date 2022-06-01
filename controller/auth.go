@@ -23,7 +23,7 @@ func AuthMiddleware(auth Auth) func(c *gin.Context) {
 		username, err := auth.ParseToken(token)
 		if err != nil {
 			c.AbortWithStatusJSON(
-				http.StatusForbidden,
+				http.StatusUnauthorized,
 				Response{
 					StatusCode: -1,
 					StatusMsg:  "Session Expired, Please Relogin.",

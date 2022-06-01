@@ -53,7 +53,7 @@ func (u *UserInfo) UserLogin() (entity.User, error) {
 	var user entity.User
 	err := repository.DB.Where(&entity.User{Name: u.Username}).First(&user).Error
 	if err != nil {
-		return user, err
+		return user, errors.New("User does not exist")
 	}
 
 	if !checkPasswd(u.Password, user.Salt, user.Password) {

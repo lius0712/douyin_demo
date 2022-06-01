@@ -56,8 +56,8 @@ func Register(c *gin.Context) {
 			}
 			token, err := jwt.GenToken()
 			if err != nil {
-				c.AbortWithStatusJSON(http.StatusInternalServerError, Response{
-					StatusCode: 1, StatusMsg: err.Error(),
+				c.AbortWithStatusJSON(http.StatusOK, UserRegisterResponse{
+					Response: Response{StatusCode: 1, StatusMsg: err.Error()},
 				})
 				return
 			}
@@ -84,8 +84,8 @@ func Login(c *gin.Context) {
 	}
 	user, err := userLogin.UserLogin()
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusForbidden, UserLoginResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "username or password err"},
+		c.AbortWithStatusJSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
 		return
 	} else {
@@ -94,8 +94,8 @@ func Login(c *gin.Context) {
 		}
 		token, err := jwt.GenToken()
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, Response{
-				StatusCode: 1, StatusMsg: err.Error(),
+			c.AbortWithStatusJSON(http.StatusOK, UserLoginResponse{
+				Response: Response{StatusCode: 1, StatusMsg: err.Error()},
 			})
 			return
 		}
@@ -114,7 +114,7 @@ func UserInfo(c *gin.Context) {
 	userInfo := service.UserInfo{Username: username}
 	user, err = userInfo.UserInfoByName()
 	if err != nil {
-		c.JSON(http.StatusOK, UserResponse{
+		c.JSON(http.StatusUnauthorized, UserResponse{
 			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		})
 	} else {

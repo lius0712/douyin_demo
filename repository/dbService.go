@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"log"
 	"os"
+	"strings"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -27,7 +29,7 @@ func ConnectDB() error {
 
 func ResetDB() error {
 	files, err := ioutil.ReadDir("./repository")
-	if err == nil {
+	if err != nil {
 		return err
 	}
 
@@ -41,13 +43,24 @@ func ResetDB() error {
 					return
 				}
 
-				b := []byte{}
-				_, err = f.Read(b)
+				b := make([]byte, 65535)
+				n, err := f.Read(b)
 				if err != nil {
 					return
 				}
 
-				err = DB.Exec(string(b)).Error
+				for _, s := range strings.Split(string(b[:n]), ";") {
+					s = strings.TrimSpace(s)
+					if len(s) == 0 {
+						continue
+					}
+					log.Println(s, len(s))
+					err = DB.Exec(s).Error
+					if err != nil {
+						return
+					}
+				}
+
 				return
 			}()
 

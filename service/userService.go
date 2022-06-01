@@ -19,6 +19,7 @@ type UserRegisterService struct {
 
 //查询用户信息,bug：用户名不可重复，需解决
 type UserInfo struct {
+	Uid      int64
 	Username string
 	Password string
 }
@@ -63,8 +64,18 @@ func (u *UserInfo) UserLogin() (entity.User, error) {
 	return user, nil
 }
 
+//根据用户名获取用户信息
+
 func (u *UserInfo) UserInfoByName() (entity.User, error) {
 	var user entity.User
 	err := repository.DB.First(&user, "username=?", u.Username).Error
+	return user, err
+}
+
+//根据用户id获取用户信息
+
+func (u *UserInfo) UserInfoByUid() (entity.User, error) {
+	var user entity.User
+	err := repository.DB.Where(&entity.User{ID: u.Uid}).First(&user).Error
 	return user, err
 }

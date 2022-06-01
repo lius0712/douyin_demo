@@ -41,3 +41,11 @@ func (c *CommentInfo) DeleteCommentByCid() error {
 	err := repository.DB.Delete(&entity.Comment{ID: c.Cid}).Error
 	return err
 }
+
+//通过videoId来查找评论内容
+
+func (c *CommentInfo) QueryCommentInfoByVideoId() ([]entity.Comment, error) {
+	var comment []entity.Comment
+	err := repository.DB.Where(&entity.Comment{Vid: c.VideoId}).Find(&comment).Error
+	return comment, err
+}

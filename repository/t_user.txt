@@ -1,5 +1,3 @@
-CREATE DATABASE douyin character SET utf8;
-
 DROP TABLE IF EXISTS `t_user`;
 CREATE TABLE t_user (
 	uid INT AUTO_INCREMENT COMMENT '用户id',

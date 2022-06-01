@@ -80,6 +80,8 @@ func Publish(c *gin.Context) {
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
 	username := c.GetString("username")
+	userId := c.Query("user_id") //user_id 一直为0, 接口问题？
+	fmt.Println(userId)
 	userQuery := service.UserInfo{
 		Username: username,
 	}

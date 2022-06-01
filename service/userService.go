@@ -68,7 +68,7 @@ func (u *UserInfo) UserLogin() (entity.User, error) {
 
 func (u *UserInfo) UserInfoByName() (entity.User, error) {
 	var user entity.User
-	err := repository.DB.First(&user, "username=?", u.Username).Error
+	err := repository.DB.Where(&entity.User{Name: u.Username}).First(&user).Error
 	return user, err
 }
 

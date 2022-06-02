@@ -13,14 +13,14 @@ type Auth interface {
 	GetUid() int64
 }
 
-func AuthMiddleware(auth Auth) func(c *gin.Context) {
+func AuthMiddleware(auth Auth, optional bool) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var token string
 		if token = c.Query("token"); len(token) == 0 {
 			token = c.PostForm("token")
 		}
 		err := auth.ParseToken(token)
-		if err != nil {
+		if err != nil && !optional {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized,
 				Response{
@@ -28,6 +28,7 @@ func AuthMiddleware(auth Auth) func(c *gin.Context) {
 					StatusMsg:  "Session Expired, Please Relogin.",
 				},
 			)
+			return
 		}
 
 		c.Set("username", auth.GetUsername())

@@ -8,7 +8,9 @@ import (
 
 type Auth interface {
 	GenToken() (string, error)
-	ParseToken(token string) (username string, err error)
+	ParseToken(token string) error
+	Username() string
+	Uid() string
 }
 
 func AuthMiddleware(auth Auth) func(c *gin.Context) {
@@ -17,7 +19,7 @@ func AuthMiddleware(auth Auth) func(c *gin.Context) {
 		if token = c.Query("token"); len(token) == 0 {
 			token = c.PostForm("token")
 		}
-		username, err := auth.ParseToken(token)
+		err := auth.ParseToken(token)
 		if err != nil {
 			c.AbortWithStatusJSON(
 				http.StatusUnauthorized,
@@ -28,7 +30,8 @@ func AuthMiddleware(auth Auth) func(c *gin.Context) {
 			)
 		}
 
-		c.Set("username", username)
+		c.Set("username", auth.Username())
+		c.Set("uid", auth.Uid())
 		c.Next()
 	}
 }

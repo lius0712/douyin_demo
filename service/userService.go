@@ -35,19 +35,19 @@ func checkPasswd(password, salt, hash string) bool {
 	return hash == base64.RawStdEncoding.EncodeToString(passwdHash)
 }
 
-func (u *UserRegisterService) Register() error {
+func (u *UserRegisterService) Register() (entity.User, error) {
 	var user entity.User
 	user.Name = u.Username
 	salt, err := uuid.NewRandom()
 	if err != nil {
-		return err
+		return user, err
 	}
 	user.Salt = salt.String()
 	user.Password = hashPasswd(u.Password, user.Salt)
 
 	err = repository.DB.Create(&user).Error
 
-	return err
+	return user, err
 }
 
 func (u *UserInfo) UserLogin() (entity.User, error) {

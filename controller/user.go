@@ -44,7 +44,7 @@ func Register(c *gin.Context) {
 			Username: username,
 			Password: password,
 		}
-		err := registerService.Register()
+		u, err := registerService.Register()
 
 		if err != nil {
 			c.JSON(http.StatusOK, UserRegisterResponse{
@@ -52,7 +52,8 @@ func Register(c *gin.Context) {
 			})
 		} else {
 			jwt := JwtAuth{
-				Username: username,
+				username: username,
+				uid:      u.ID,
 			}
 			token, err := jwt.GenToken()
 			if err != nil {
@@ -90,7 +91,8 @@ func Login(c *gin.Context) {
 		return
 	} else {
 		jwt := JwtAuth{
-			Username: username,
+			username: username,
+			uid:      user.ID,
 		}
 		token, err := jwt.GenToken()
 		if err != nil {

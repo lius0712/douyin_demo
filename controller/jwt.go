@@ -8,7 +8,8 @@ import (
 )
 
 type JwtAuth struct {
-	Username string `json:"username"`
+	username string `json:"username"`
+	uid      int64  `json:"uid"`
 	jwt.StandardClaims
 }
 
@@ -27,7 +28,7 @@ func (auth *JwtAuth) GenToken() (string, error) {
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, auth).SignedString([]byte(JWT_TOKEN_KEY))
 }
 
-func (auth *JwtAuth) ParseToken(token string) (username string, err error) {
+func (auth *JwtAuth) ParseToken(token string) (err error) {
 	tok, err := jwt.ParseWithClaims(token, auth, func(token *jwt.Token) (i interface{}, err error) {
 		return []byte(JWT_TOKEN_KEY), nil
 	})
@@ -38,8 +39,16 @@ func (auth *JwtAuth) ParseToken(token string) (username string, err error) {
 
 	if c, ok := tok.Claims.(*JwtAuth); ok && tok.Valid {
 		auth = c
-		return auth.Username, nil
+		return nil
 	}
 
-	return "", errors.New("Invalid Token")
+	return errors.New("Invalid Token")
+}
+
+func (auth *JwtAuth) Username() string {
+	return auth.username
+}
+
+func (auth *JwtAuth) Uid() int64 {
+	return auth.uid
 }

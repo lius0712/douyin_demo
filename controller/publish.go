@@ -53,7 +53,6 @@ func Publish(c *gin.Context) {
 	}
 	tmpname := uuid.String()
 
-	// TODO: configurable path
 	tmpPath := video.GetVideoLocalPath(tmpname)
 
 	if err := c.SaveUploadedFile(data, tmpPath); err != nil {
@@ -88,6 +87,8 @@ func Publish(c *gin.Context) {
 		})
 		return
 	}
+
+	go video.ExtractFrame(realPath, video.GetCoverLocalPath(fmt.Sprintf("%v", vid)))
 
 	c.JSON(http.StatusOK, Response{
 		StatusCode: 0,

@@ -57,6 +57,10 @@ func Feed(c *gin.Context) {
 		allAuthor[i].FollowerCount = UserItem.FollowerCount
 		allAuthor[i].IsFollow = UserItem.IsFollow
 
+		f := service.FavoriteService{}
+		f.Uid = c.GetInt64("uid")
+		f.Vid = videoItem.ID
+
 		allVideos[i].Id = videoItem.ID
 		allVideos[i].Author = allAuthor[i]
 		allVideos[i].PlayUrl = video.GetVideoRemotePath(fmt.Sprintf("%d", videoItem.ID))
@@ -64,7 +68,7 @@ func Feed(c *gin.Context) {
 		allVideos[i].FavoriteCount = videoItem.FavoriteCount
 		allVideos[i].CommentCount = videoItem.CommentCount
 		allVideos[i].Title = videoItem.Title
-		allVideos[i].IsFavorite = videoItem.IsFavorite
+		allVideos[i].IsFavorite = f.UserIsFavorited()
 
 		log.Println(allVideos[i].PlayUrl, allVideos[i].CoverUrl)
 	}

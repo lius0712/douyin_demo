@@ -149,7 +149,6 @@ func PublishList(c *gin.Context) {
 		DemoVideo[i].PlayUrl = video.GetCoverRemotePath(fmt.Sprintf("%d", videoList.ID))
 		DemoVideo[i].FavoriteCount = videoList.FavoriteCount
 		DemoVideo[i].CommentCount = videoList.CommentCount
-		DemoVideo[i].IsFavorite = videoList.IsFavorite
 	}
 	//fmt.Println("************")
 	//fmt.Println(DemoVideo)

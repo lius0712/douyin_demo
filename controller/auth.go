@@ -10,7 +10,7 @@ type Auth interface {
 	GenToken() (string, error)
 	ParseToken(token string) error
 	Username() string
-	Uid() string
+	Uid() int64
 }
 
 func AuthMiddleware(auth Auth) func(c *gin.Context) {

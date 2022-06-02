@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"log"
 	"os"
 	"strings"
 
@@ -9,13 +8,15 @@ import (
 	"gorm.io/gorm"
 
 	"io/ioutil"
+
+	"github.com/RaymondCode/simple-demo/config"
 )
 
 var DB *gorm.DB
 
 func ConnectDB() error {
 
-	dsn := "root:123456@tcp(127.0.0.1:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
+	dsn := config.Config.MySQLDSN
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -54,7 +55,6 @@ func ResetDB() error {
 					if len(s) == 0 {
 						continue
 					}
-					log.Println(s, len(s))
 					err = DB.Exec(s).Error
 					if err != nil {
 						return

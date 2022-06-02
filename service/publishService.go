@@ -17,15 +17,13 @@ type VideoListByName struct {
 }
 
 //视频信息插入数据库
-func (v *VideoInsertInfo) VideoInsert() error {
+func (v *VideoInsertInfo) VideoInsert() (int64, error) {
 	var video entity.Video
 	video.Author = v.Author
-	video.PlayerUrl = v.PlayerUrl
-	video.CoverUrl = v.CoverUrl
 	video.Title = v.Title
 
 	err := repository.DB.Create(&video).Error
-	return err
+	return video.ID, err
 }
 
 //从数据中查询用户发布的视频,得到视频列表

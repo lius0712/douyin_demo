@@ -1,11 +1,15 @@
 package controller
 
 import (
-	"github.com/RaymondCode/simple-demo/entity"
-	"github.com/RaymondCode/simple-demo/service"
-	"github.com/gin-gonic/gin"
+	"fmt"
+	"log"
 	"net/http"
 	"time"
+
+	"github.com/RaymondCode/simple-demo/entity"
+	"github.com/RaymondCode/simple-demo/service"
+	"github.com/RaymondCode/simple-demo/video"
+	"github.com/gin-gonic/gin"
 )
 
 type FeedResponse struct {
@@ -55,13 +59,14 @@ func Feed(c *gin.Context) {
 
 		allVideos[i].Id = videoItem.ID
 		allVideos[i].Author = allAuthor[i]
-		allVideos[i].PlayUrl = videoItem.PlayerUrl
-		allVideos[i].CoverUrl = videoItem.CoverUrl
+		allVideos[i].PlayUrl = video.GetVideoRemotePath(fmt.Sprintf("%d", videoItem.ID))
+		allVideos[i].CoverUrl = video.GetCoverRemotePath(fmt.Sprintf("%d", videoItem.ID))
 		allVideos[i].FavoriteCount = videoItem.FavoriteCount
 		allVideos[i].CommentCount = videoItem.CommentCount
 		allVideos[i].Title = videoItem.Title
 		allVideos[i].IsFavorite = videoItem.IsFavorite
 
+		log.Println(allVideos[i].PlayUrl, allVideos[i].CoverUrl)
 	}
 
 	c.JSON(http.StatusOK, FeedResponse{

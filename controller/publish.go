@@ -2,11 +2,14 @@ package controller
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/service"
+	"github.com/RaymondCode/simple-demo/video"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"path/filepath"
+	"github.com/google/uuid"
 )
 
 type VideoListResponse struct {
@@ -40,40 +43,56 @@ func Publish(c *gin.Context) {
 		return
 	}
 
-	filename := filepath.Base(data.Filename)
-
-	finalName := fmt.Sprintf("%d_%s", user.ID, filename)
-
-	saveFile := filepath.Join("./public/", finalName)
-
-	if err := c.SaveUploadedFile(data, saveFile); err != nil {
+	uuid, err := uuid.NewRandom()
+	if err != nil {
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
 		})
 		return
 	}
-	IP := "http://10.128.229.176:8080/static/" //改为app连接服务端的地址，否则无法播放，后续优化
-	playerUrl := IP + finalName                //视频源
-	coverUrl := IP + "2.jpg"                   //封面图片，后续优化：截取视频某一帧作为封面
+	tmpname := uuid.String()
 
-	videoInsertService := service.VideoInsertInfo{
-		Author:    user.Name,
-		PlayerUrl: playerUrl,
-		CoverUrl:  coverUrl,
-		Title:     title,
+	tmpPath := video.GetVideoLocalPath(tmpname)
+
+	if err := c.SaveUploadedFile(data, tmpPath); err != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  err.Error(),
+		})
+		return
 	}
 
-	err = videoInsertService.VideoInsert()
+	videoInsertService := service.VideoInsertInfo{
+		Author: user.Name,
+		Title:  title,
+	}
+
+	vid, err := videoInsertService.VideoInsert()
 	if err != nil {
+		os.Remove(tmpPath)
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  "insert mysql failed",
 		})
+		return
 	}
+
+	realPath := video.GetVideoLocalPath(fmt.Sprintf("%v", vid))
+	err = os.Rename(tmpPath, realPath)
+	if err != nil {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 1,
+			StatusMsg:  err.Error(),
+		})
+		return
+	}
+
+	go video.ExtractFrame(realPath, video.GetCoverLocalPath(fmt.Sprintf("%v", vid)))
+
 	c.JSON(http.StatusOK, Response{
 		StatusCode: 0,
-		StatusMsg:  finalName + " uploaded successfully",
+		StatusMsg:  tmpname + " uploaded successfully",
 	})
 }
 
@@ -126,8 +145,8 @@ func PublishList(c *gin.Context) {
 
 	for i, videoList := range videos {
 		DemoVideo[i].Author = VideoUser
-		DemoVideo[i].PlayUrl = videoList.PlayerUrl
-		DemoVideo[i].CoverUrl = videoList.CoverUrl
+		DemoVideo[i].PlayUrl = video.GetVideoRemotePath(fmt.Sprintf("%d", videoList.ID))
+		DemoVideo[i].PlayUrl = video.GetCoverRemotePath(fmt.Sprintf("%d", videoList.ID))
 		DemoVideo[i].FavoriteCount = videoList.FavoriteCount
 		DemoVideo[i].CommentCount = videoList.CommentCount
 		DemoVideo[i].IsFavorite = videoList.IsFavorite

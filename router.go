@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/RaymondCode/simple-demo/config"
 	"github.com/RaymondCode/simple-demo/controller"
 	"github.com/gin-gonic/gin"
 )
@@ -9,7 +10,7 @@ func initRouter(r *gin.Engine) {
 	auth := controller.AuthMiddleware(&controller.JwtAuth{})
 
 	// public directory is used to serve static resources
-	r.Static("/static", "./public")
+	r.Static("/"+config.Config.RemoteVideoPath, config.Config.LocalVideoPath)
 
 	apiRouter := r.Group("/douyin")
 

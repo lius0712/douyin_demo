@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
+	"github.com/RaymondCode/simple-demo/config"
 	"github.com/RaymondCode/simple-demo/repository"
 	"github.com/gin-gonic/gin"
 )
@@ -24,7 +26,8 @@ func main() {
 
 	r := gin.Default()
 	initRouter(r)
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	// run on port config
+	r.Run(fmt.Sprintf(":%d", config.Config.Port))
 }
 
 func Init() error {

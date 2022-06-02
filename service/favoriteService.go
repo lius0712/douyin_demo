@@ -52,9 +52,22 @@ func (f *FavoriteService) UserIsFavorited() bool {
 
 // UserFavoritedVideos returns a list of videos favorited by the user.
 func (f *FavoriteService) UserFavoriteVideos() ([]entity.Video, error) {
+	var favs []entity.Favorite
 	var videos []entity.Video
-	err := repository.DB.Where(&entity.Favorite{Uid: f.Uid}).Find(&videos).Error
-	return videos, err
+
+	err := repository.DB.Where(&entity.Favorite{Uid: f.Uid}).Find(&favs).Error
+	if err != nil {
+		return nil, err
+	}
+
+	for _, fav := range favs {
+		v := entity.Video{ID: fav.Vid}
+		if err := repository.DB.Where(&v).Take(&v).Error; err != nil {
+			continue
+		}
+		videos = append(videos, v)
+	}
+	return videos, nil
 }
 
 // videoFavoriteInc Increments the favorite count of the video by 1.

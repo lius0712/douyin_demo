@@ -8,6 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type FavoriteListResponse struct {
+	VideoList []Video `json:"video_list"`
+	Response
+}
+
 // FavoriteAction no practical effect, just check if token is valid
 func FavoriteAction(c *gin.Context) {
 	uid := c.GetInt64("uid")
@@ -55,10 +60,28 @@ func FavoriteAction(c *gin.Context) {
 
 // FavoriteList all users have same favorite video list
 func FavoriteList(c *gin.Context) {
-	// f := service.FavoriteService{}
-	// f.Uid = c.GetInt64("uid")
-	// videos, err := f.UserFavoriteVideos()
-	// if err != nil {
-	// 	c.JSON(http.StatusOK, Response{})
-	// }
+	f := service.FavoriteService{}
+	f.Uid = c.GetInt64("uid")
+	videos, err := f.UserFavoriteVideos()
+	if err != nil {
+		c.JSON(http.StatusOK, FavoriteListResponse{
+			Response: Response{StatusCode: 1, StatusMsg: err.Error()},
+		})
+		return
+	}
+
+	videoList := make([]Video, 0, len(videos))
+	for _, v := range videos {
+		ve, err := VideoByEntity(v)
+		if err != nil {
+			continue
+		}
+
+		videoList = append(videoList, *ve)
+	}
+
+	c.JSON(http.StatusOK, FavoriteListResponse{
+		VideoList: videoList,
+		Response:  Response{StatusCode: 0},
+	})
 }

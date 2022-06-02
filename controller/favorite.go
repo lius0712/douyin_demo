@@ -55,10 +55,10 @@ func FavoriteAction(c *gin.Context) {
 
 // FavoriteList all users have same favorite video list
 func FavoriteList(c *gin.Context) {
-	//c.JSON(http.StatusOK, VideoListResponse{
-	//	Response: Response{
-	//		StatusCode: 0,
-	//	},
-	//	VideoList: DemoVideos,
-	//})
+	// f := service.FavoriteService{}
+	// f.Uid = c.GetInt64("uid")
+	// videos, err := f.UserFavoriteVideos()
+	// if err != nil {
+	// 	c.JSON(http.StatusOK, Response{})
+	// }
 }

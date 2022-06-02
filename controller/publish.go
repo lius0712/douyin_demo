@@ -132,26 +132,15 @@ func PublishList(c *gin.Context) {
 	}
 
 	lenVideo := len(videos)
+	DemoVideo := make([]Video, 0, lenVideo)
 
-	var DemoVideo []Video
-	var VideoUser User
-	DemoVideo = make([]Video, lenVideo)
-
-	VideoUser.Id = user.ID //类型转换
-	VideoUser.Name = user.Name
-	VideoUser.FollowCount = user.FollowCount
-	VideoUser.FollowerCount = user.FollowerCount
-	VideoUser.IsFollow = user.IsFollow
-
-	for i, videoList := range videos {
-		DemoVideo[i].Author = VideoUser
-		DemoVideo[i].PlayUrl = video.GetVideoRemotePath(fmt.Sprintf("%d", videoList.ID))
-		DemoVideo[i].PlayUrl = video.GetCoverRemotePath(fmt.Sprintf("%d", videoList.ID))
-		DemoVideo[i].FavoriteCount = videoList.FavoriteCount
-		DemoVideo[i].CommentCount = videoList.CommentCount
+	for _, v := range videos {
+		ve, err := VideoByEntity(v)
+		if err != nil {
+			continue
+		}
+		DemoVideo = append(DemoVideo, *ve)
 	}
-	//fmt.Println("************")
-	//fmt.Println(DemoVideo)
 
 	c.JSON(
 		http.StatusOK,

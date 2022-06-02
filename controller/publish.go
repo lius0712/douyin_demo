@@ -98,13 +98,11 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
-	username := c.GetString("username")
-	userId := c.Query("user_id") //user_id 一直为0, 接口问题？
-	fmt.Println(userId)
+	userId := c.GetInt64("uid")
 	userQuery := service.UserInfo{
-		Username: username,
+		Uid: userId,
 	}
-	user, errUser := userQuery.UserInfoByName() //查询到该用户信息
+	user, errUser := userQuery.UserInfoByUid() //查询到该用户信息
 	if errUser != nil {
 		c.JSON(http.StatusOK, VideoListResponse{
 			Response: Response{
@@ -134,12 +132,13 @@ func PublishList(c *gin.Context) {
 	lenVideo := len(videos)
 	DemoVideo := make([]Video, 0, lenVideo)
 
+	u := UserByEntity(user)
 	for _, v := range videos {
-		ve, err := VideoByEntity(v)
-		if err != nil {
-			continue
-		}
-		DemoVideo = append(DemoVideo, *ve)
+		ve := VideoByEntity(v)
+		fav := service.FavoriteService{Uid: userId, Vid: ve.Id}
+		ve.IsFavorite = fav.UserIsFavorited()
+		ve.Author = u
+		DemoVideo = append(DemoVideo, ve)
 	}
 
 	c.JSON(

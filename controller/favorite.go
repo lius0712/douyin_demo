@@ -58,7 +58,7 @@ func FavoriteAction(c *gin.Context) {
 	})
 }
 
-// FavoriteList all users have same favorite video list
+// FavoriteList get favorite list
 func FavoriteList(c *gin.Context) {
 	f := service.FavoriteService{}
 	f.Uid = c.GetInt64("uid")
@@ -72,12 +72,16 @@ func FavoriteList(c *gin.Context) {
 
 	videoList := make([]Video, 0, len(videos))
 	for _, v := range videos {
-		ve, err := VideoByEntity(v)
+		ve := VideoByEntity(v)
+
+		author, err := VideoAuthor(v)
 		if err != nil {
 			continue
 		}
 
-		videoList = append(videoList, *ve)
+		ve.Author = *author
+		ve.IsFavorite = true
+		videoList = append(videoList, ve)
 	}
 
 	c.JSON(http.StatusOK, FavoriteListResponse{

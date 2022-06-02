@@ -39,8 +39,9 @@ type User struct {
 	IsFollow      bool   `json:"is_follow"`
 }
 
-func UserByEntity(user entity.User) *User {
-	return &User{
+// UserByEntity 将entity.User转换为User
+func UserByEntity(user entity.User) User {
+	return User{
 		Id:            user.ID,
 		Name:          user.Name,
 		FollowCount:   user.FollowCount,
@@ -49,22 +50,27 @@ func UserByEntity(user entity.User) *User {
 	}
 }
 
-func VideoByEntity(v entity.Video) (*Video, error) {
-	author := service.UserInfo{Username: v.Author}
-	user, err := author.UserInfoByName()
-	if err != nil {
-		return nil, err
-	}
-
-	fav := service.FavoriteService{Uid: user.ID, Vid: v.ID}
-	return &Video{
+// VideoByEntity 将entity.Video转换为Video
+// 但是并不设置Author和IsFavorite
+func VideoByEntity(v entity.Video) Video {
+	return Video{
 		Id:            v.ID,
-		Author:        *UserByEntity(user),
 		PlayUrl:       video.GetVideoRemotePath(fmt.Sprintf("%d", v.ID)),
 		CoverUrl:      video.GetCoverRemotePath(fmt.Sprintf("%d", v.ID)),
 		Title:         v.Title,
 		FavoriteCount: v.FavoriteCount,
 		CommentCount:  v.CommentCount,
-		IsFavorite:    fav.UserIsFavorited(),
-	}, nil
+	}
+}
+
+// 从Video中获取Author，并返回json回复格式
+func VideoAuthor(v entity.Video) (*User, error) {
+	ui := service.UserInfo{Username: v.Author}
+	ue, err := ui.UserInfoByName()
+	if err != nil {
+		return nil, err
+	}
+
+	u := UserByEntity(ue)
+	return &u, nil
 }

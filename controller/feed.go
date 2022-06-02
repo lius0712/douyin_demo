@@ -29,12 +29,19 @@ func Feed(c *gin.Context) {
 
 	lenVideo := len(videos)
 	allVideos := make([]Video, 0, lenVideo)
+	uid := c.GetInt64("uid")
 	for _, videoItem := range videos {
-		vid, err := VideoByEntity(videoItem)
+		vid := VideoByEntity(videoItem)
+		author, err := VideoAuthor(videoItem)
 		if err != nil {
 			continue
 		}
-		allVideos = append(allVideos, *vid)
+		vid.Author = *author
+		if uid > 0 {
+			fav := service.FavoriteService{Uid: uid, Vid: vid.Id}
+			vid.IsFavorite = fav.UserIsFavorited()
+		}
+		allVideos = append(allVideos, vid)
 	}
 
 	c.JSON(http.StatusOK, FeedResponse{

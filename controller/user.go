@@ -52,8 +52,8 @@ func Register(c *gin.Context) {
 			})
 		} else {
 			jwt := JwtAuth{
-				username: username,
-				uid:      u.ID,
+				Username: username,
+				Uid:      u.ID,
 			}
 			token, err := jwt.GenToken()
 			if err != nil {
@@ -91,8 +91,8 @@ func Login(c *gin.Context) {
 		return
 	} else {
 		jwt := JwtAuth{
-			username: username,
-			uid:      user.ID,
+			Username: username,
+			Uid:      user.ID,
 		}
 		token, err := jwt.GenToken()
 		if err != nil {

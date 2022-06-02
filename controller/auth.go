@@ -9,8 +9,8 @@ import (
 type Auth interface {
 	GenToken() (string, error)
 	ParseToken(token string) error
-	Username() string
-	Uid() int64
+	GetUsername() string
+	GetUid() int64
 }
 
 func AuthMiddleware(auth Auth) func(c *gin.Context) {
@@ -30,8 +30,8 @@ func AuthMiddleware(auth Auth) func(c *gin.Context) {
 			)
 		}
 
-		c.Set("username", auth.Username())
-		c.Set("uid", auth.Uid())
+		c.Set("username", auth.GetUsername())
+		c.Set("uid", auth.GetUid())
 		c.Next()
 	}
 }

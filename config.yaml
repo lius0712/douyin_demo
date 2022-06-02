@@ -1,4 +1,4 @@
-public_address: "192.168.50.8"
+public_address: "10.128.229.176"
 port: 8080
 mysql_dsn: "root:123456@tcp(127.0.0.1:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
 local_video_path: "./public/"

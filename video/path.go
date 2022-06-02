@@ -8,19 +8,19 @@ import (
 )
 
 func GetVideoLocalPath(name string) string {
-	return filepath.Join(config.Config.LocalVideoPath, fmt.Sprintf("%v.mp4", name))
+	return filepath.ToSlash(filepath.Join(config.Config.LocalVideoPath, fmt.Sprintf("%v.mp4", name)))
 }
 
 func GetCoverLocalPath(name string) string {
-	return filepath.Join(config.Config.LocalVideoPath, fmt.Sprintf("%v.jpg", name))
+	return filepath.ToSlash(filepath.Join(config.Config.LocalVideoPath, fmt.Sprintf("%v.jpg", name)))
 }
 
 func GetVideoRemotePath(name string) string {
 	return config.Config.Url +
-		filepath.Join(config.Config.RemoteVideoPath, fmt.Sprintf("%v.mp4", name))
+		filepath.ToSlash(filepath.Join(config.Config.RemoteVideoPath, fmt.Sprintf("%v.mp4", name)))
 }
 
 func GetCoverRemotePath(name string) string {
 	return config.Config.Url +
-		filepath.Join(config.Config.RemoteVideoPath, fmt.Sprintf("%v.jpg", name))
+		filepath.ToSlash(filepath.Join(config.Config.RemoteVideoPath, fmt.Sprintf("%v.jpg", name)))
 }

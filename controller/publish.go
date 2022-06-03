@@ -98,13 +98,11 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
-	username := c.GetString("username")
-	userId := c.Query("user_id") //user_id 一直为0, 接口问题？
-	fmt.Println(userId)
+	userId := c.GetInt64("uid")
 	userQuery := service.UserInfo{
-		Username: username,
+		Uid: userId,
 	}
-	user, errUser := userQuery.UserInfoByName() //查询到该用户信息
+	user, errUser := userQuery.UserInfoByUid() //查询到该用户信息
 	if errUser != nil {
 		c.JSON(http.StatusOK, VideoListResponse{
 			Response: Response{
@@ -132,27 +130,16 @@ func PublishList(c *gin.Context) {
 	}
 
 	lenVideo := len(videos)
+	DemoVideo := make([]Video, 0, lenVideo)
 
-	var DemoVideo []Video
-	var VideoUser User
-	DemoVideo = make([]Video, lenVideo)
-
-	VideoUser.Id = user.ID //类型转换
-	VideoUser.Name = user.Name
-	VideoUser.FollowCount = user.FollowCount
-	VideoUser.FollowerCount = user.FollowerCount
-	VideoUser.IsFollow = user.IsFollow
-
-	for i, videoList := range videos {
-		DemoVideo[i].Author = VideoUser
-		DemoVideo[i].PlayUrl = video.GetVideoRemotePath(fmt.Sprintf("%d", videoList.ID))
-		DemoVideo[i].PlayUrl = video.GetCoverRemotePath(fmt.Sprintf("%d", videoList.ID))
-		DemoVideo[i].FavoriteCount = videoList.FavoriteCount
-		DemoVideo[i].CommentCount = videoList.CommentCount
-		DemoVideo[i].IsFavorite = videoList.IsFavorite
+	u := UserByEntity(user)
+	for _, v := range videos {
+		ve := VideoByEntity(v)
+		fav := service.FavoriteService{Uid: userId, Vid: ve.Id}
+		ve.IsFavorite = fav.UserIsFavorited()
+		ve.Author = u
+		DemoVideo = append(DemoVideo, ve)
 	}
-	//fmt.Println("************")
-	//fmt.Println(DemoVideo)
 
 	c.JSON(
 		http.StatusOK,

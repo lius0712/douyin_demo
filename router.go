@@ -7,7 +7,8 @@ import (
 )
 
 func initRouter(r *gin.Engine) {
-	auth := controller.AuthMiddleware(&controller.JwtAuth{})
+	auth := controller.AuthMiddleware(&controller.JwtAuth{}, false)
+	optionalAuth := controller.AuthMiddleware(&controller.JwtAuth{}, true)
 
 	// public directory is used to serve static resources
 	r.Static("/"+config.Config.RemoteVideoPath, config.Config.LocalVideoPath)
@@ -15,7 +16,7 @@ func initRouter(r *gin.Engine) {
 	apiRouter := r.Group("/douyin")
 
 	// basic apis
-	apiRouter.GET("/feed/", controller.Feed)
+	apiRouter.GET("/feed/", optionalAuth, controller.Feed)
 	apiRouter.GET("/user/", auth, controller.UserInfo)
 	apiRouter.POST("/user/register/", controller.Register)
 	apiRouter.POST("/user/login/", controller.Login)

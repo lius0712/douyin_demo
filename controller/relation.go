@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -15,8 +14,7 @@ type UserListResponse struct {
 
 // RelationAction no practical effect, just check if token is valid
 func RelationAction(c *gin.Context) {
-	FromUid := c.GetInt64("Uid")
-	fmt.Println(FromUid) //一直为0，？？？？
+	FromUid := c.GetInt64("uid")
 	ToUid, err := strconv.ParseInt(c.Query("to_user_id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "to_user_id is not valid"})

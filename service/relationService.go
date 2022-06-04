@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/repository"
 	"gorm.io/gorm"
@@ -18,7 +17,6 @@ func (r *RelationInfo) RelationAction() error {
 	var relation entity.Relation
 	relation.FromUid = r.FromUid
 	relation.ToUid = r.ToUid
-	fmt.Println(relation) //FromUid一直为0， ？？？， bug
 	err := repository.DB.Create(&relation).Error
 
 	if err != nil {

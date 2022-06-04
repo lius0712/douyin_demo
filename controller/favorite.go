@@ -78,7 +78,8 @@ func FavoriteList(c *gin.Context) {
 		if err != nil {
 			continue
 		}
-
+		relation := service.RelationInfo{FromUid: f.Uid, ToUid: author.Id}
+		author.IsFollow = relation.UserIsRelationed()
 		ve.Author = *author
 		ve.IsFavorite = true
 		videoList = append(videoList, ve)

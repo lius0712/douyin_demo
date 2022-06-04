@@ -22,7 +22,7 @@ type UserLoginResponse struct {
 
 type UserResponse struct {
 	Response
-	User entity.User `json:"user"`
+	User User `json:"user"`
 }
 
 func Register(c *gin.Context) {
@@ -110,11 +110,12 @@ func Login(c *gin.Context) {
 }
 
 func UserInfo(c *gin.Context) {
-	username := c.GetString("username")
+	//username := c.GetString("username")
+	userId := c.GetInt64("uid")
 	var user entity.User
 	var err error
-	userInfo := service.UserInfo{Username: username}
-	user, err = userInfo.UserInfoByName()
+	userInfo := service.UserInfo{Uid: userId}
+	user, err = userInfo.UserInfoByUid()
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, UserResponse{
 			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
@@ -122,9 +123,13 @@ func UserInfo(c *gin.Context) {
 	} else {
 		//fmt.Println(user)
 		//user.Name = token
+
+		userDemo := UserByEntity(user)
+		userDemo.IsFollow = true //自己对自己默认设置已关注
+
 		c.JSON(http.StatusOK, UserResponse{
 			Response: Response{StatusCode: 0},
-			User:     user,
+			User:     userDemo,
 		})
 	}
 }

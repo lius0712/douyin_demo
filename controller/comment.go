@@ -21,12 +21,9 @@ type CommentActionResponse struct {
 // CommentAction no practical effect, just check if token is valid
 func CommentAction(c *gin.Context) {
 	username := c.GetString("username") //用户鉴权token
-	//fmt.Println(c.Query("user_id")) // 接口中无user_id
-	//userId, err1 := strconv.ParseInt(c.Query("user_id"), 10, 64) //将字符类型转化成整形
-	//if err1 != nil {
-	//	c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "数据转化错误"})
-	//	return
-	//}
+	uid := c.GetInt64("uid")
+	//fmt.Println(c.GetInt64("uid"))
+
 	videoId, err2 := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	if err2 != nil {
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "数据转化错误"})
@@ -72,12 +69,9 @@ func CommentAction(c *gin.Context) {
 			})
 		}
 
-		var user User
-		user.Id = entityUser.ID
-		user.Name = entityUser.Name
-		user.FollowCount = entityUser.FollowCount
-		user.FollowerCount = entityUser.FollowerCount
-		user.IsFollow = entityUser.IsFollow
+		user := UserByEntity(entityUser)
+		relation := service.RelationInfo{FromUid: uid, ToUid: user.Id}
+		user.IsFollow = relation.UserIsRelationed()
 
 		c.JSON(http.StatusOK, CommentActionResponse{
 			Comment: Comment{
@@ -109,7 +103,7 @@ func CommentAction(c *gin.Context) {
 
 // CommentList all videos have same demo comment list
 func CommentList(c *gin.Context) {
-
+	uid := c.GetInt64("uid")
 	videoId, errData := strconv.ParseInt(c.Query("video_id"), 10, 64)
 	if errData != nil {
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "数据转化错误"})
@@ -130,10 +124,8 @@ func CommentList(c *gin.Context) {
 	lenComment := len(entityComment)
 
 	var DemoComment []Comment
-	var CommentUser []User
 
 	DemoComment = make([]Comment, lenComment)
-	CommentUser = make([]User, lenComment)
 
 	for i, commentItem := range entityComment {
 		commentUid := commentItem.Uid //获取每条评论的用户id
@@ -146,14 +138,12 @@ func CommentList(c *gin.Context) {
 			})
 			return
 		}
-		CommentUser[i].Id = userEntity.ID
-		CommentUser[i].Name = userEntity.Name
-		CommentUser[i].FollowCount = userEntity.FollowCount
-		CommentUser[i].FollowerCount = userEntity.FollowerCount
-		CommentUser[i].IsFollow = userEntity.IsFollow
+		user := UserByEntity(userEntity)
+		relation := service.RelationInfo{FromUid: uid, ToUid: user.Id}
+		user.IsFollow = relation.UserIsRelationed()
 
 		DemoComment[i].Id = commentItem.ID
-		DemoComment[i].User = CommentUser[i]
+		DemoComment[i].User = user
 		DemoComment[i].Content = commentItem.Comment
 		DemoComment[i].CreateDate = commentItem.CreateDate
 	}

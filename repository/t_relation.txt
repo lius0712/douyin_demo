@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS `t_relation`;
+CREATE TABLE t_relation (
+    from_uid INT NOT NULL COMMENT '被关注用户id',
+    to_uid INT NOT NULL COMMENT '关注用户id',
+    PRIMARY KEY (from_uid, to_uid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

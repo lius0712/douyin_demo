@@ -36,6 +36,8 @@ func Feed(c *gin.Context) {
 		if err != nil {
 			continue
 		}
+		relation := service.RelationInfo{FromUid: uid, ToUid: author.Id}
+		author.IsFollow = relation.UserIsRelationed()
 		vid.Author = *author
 		if uid > 0 {
 			fav := service.FavoriteService{Uid: uid, Vid: vid.Id}

@@ -46,7 +46,6 @@ func UserByEntity(user entity.User) User {
 		Name:          user.Name,
 		FollowCount:   user.FollowCount,
 		FollowerCount: user.FollowerCount,
-		IsFollow:      user.IsFollow,
 	}
 }
 

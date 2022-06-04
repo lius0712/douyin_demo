@@ -133,6 +133,7 @@ func PublishList(c *gin.Context) {
 	DemoVideo := make([]Video, 0, lenVideo)
 
 	u := UserByEntity(user)
+	u.IsFollow = true // 自己默认对自己已关注
 	for _, v := range videos {
 		ve := VideoByEntity(v)
 		fav := service.FavoriteService{Uid: userId, Vid: ve.Id}

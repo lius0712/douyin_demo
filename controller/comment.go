@@ -93,7 +93,7 @@ func CommentAction(c *gin.Context) {
 			c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "数据转化错误"})
 			return
 		}
-		commentInfoDelete := service.CommentInfo{Cid: commentId}
+		commentInfoDelete := service.CommentInfo{Cid: commentId, VideoId: videoId}
 		errDelete := commentInfoDelete.DeleteCommentByCid()
 
 		if errDelete != nil {

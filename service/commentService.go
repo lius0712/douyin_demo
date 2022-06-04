@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/repository"
+	"gorm.io/gorm"
 )
 
 type CommentInfo struct {
@@ -24,6 +25,11 @@ func (c *CommentInfo) CommentInsert() error {
 
 	err := repository.DB.Create(&comment).Error
 
+	if err != nil {
+		return err
+	}
+
+	err = c.videoCommentInc(1)
 	return err
 }
 
@@ -38,7 +44,16 @@ func (c *CommentInfo) CommentInfoByVideoUidAndCommentUid() (entity.Comment, erro
 //通过commentId来删除评论内容
 
 func (c *CommentInfo) DeleteCommentByCid() error {
-	err := repository.DB.Delete(&entity.Comment{ID: c.Cid}).Error
+	var comment entity.Comment
+	comment.ID = c.Cid
+	err := repository.DB.Delete(&comment, &comment).Error
+
+	if err != nil {
+		return err
+	}
+
+	err = c.videoCommentInc(-1)
+
 	return err
 }
 
@@ -48,4 +63,20 @@ func (c *CommentInfo) QueryCommentInfoByVideoId() ([]entity.Comment, error) {
 	var comment []entity.Comment
 	err := repository.DB.Where(&entity.Comment{Vid: c.VideoId}).Find(&comment).Error
 	return comment, err
+}
+
+// videoCommentInc Increments the comment count of the video by 1.
+func (c *CommentInfo) videoCommentInc(count int64) error {
+	var video entity.Video
+	video.ID = c.VideoId
+	err := repository.DB.Transaction(func(tx *gorm.DB) error {
+		err := tx.Find(&video, &video).Error
+		if err != nil {
+			return err
+		}
+		video.CommentCount += count
+		err = tx.Save(&video).Error
+		return err
+	})
+	return err
 }

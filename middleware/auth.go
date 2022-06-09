@@ -1,8 +1,6 @@
-package controller
+package middleware
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,13 +19,13 @@ func AuthMiddleware(auth Auth, optional bool) func(c *gin.Context) {
 		}
 		err := auth.ParseToken(token)
 		if err != nil && !optional {
-			c.AbortWithStatusJSON(
-				http.StatusUnauthorized,
-				Response{
-					StatusCode: -1,
-					StatusMsg:  "Session Expired, Please Relogin.",
-				},
-			)
+			//c.AbortWithStatusJSON(
+			//	http.StatusUnauthorized,
+			//	controller.Response{
+			//		StatusCode: -1,
+			//		StatusMsg:  "Session Expired, Please Relogin.",
+			//	},
+			//)
 			return
 		}
 

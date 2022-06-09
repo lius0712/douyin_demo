@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/RaymondCode/simple-demo/entity"
+	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 )
@@ -51,7 +52,7 @@ func Register(c *gin.Context) {
 				Response: Response{StatusCode: 1, StatusMsg: "Insert failed"},
 			})
 		} else {
-			jwt := JwtAuth{
+			jwt := middleware.JwtAuth{
 				Username: username,
 				Uid:      u.ID,
 			}
@@ -90,7 +91,7 @@ func Login(c *gin.Context) {
 		})
 		return
 	} else {
-		jwt := JwtAuth{
+		jwt := middleware.JwtAuth{
 			Username: username,
 			Uid:      user.ID,
 		}

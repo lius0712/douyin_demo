@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/RaymondCode/simple-demo/cache"
 	"log"
 	"os"
 
@@ -14,6 +15,9 @@ func main() {
 	if err := Init(); err != nil {
 		os.Exit(-1)
 	}
+
+	//for example
+	cache.Set("name", "wwww", 0)
 
 	if len(os.Args) > 1 && os.Args[1] == "reset" {
 		err := repository.ResetDB()

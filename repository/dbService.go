@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -29,14 +28,11 @@ func ConnectDB() error {
 	}
 
 	DB = db
-
 	return err
 }
 
 //连接Redis
 func ConnectRDB() error {
-
-	fmt.Println(config.Config.RdbUrl)
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     config.Config.RdbUrl,
@@ -55,8 +51,7 @@ func ConnectRDB() error {
 	}
 
 	RDB = rdb
-	ctx = context.Background()
-	rdb.Set(ctx, "zwk", 123456, 0)
+
 	return err
 }
 

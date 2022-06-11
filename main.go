@@ -27,11 +27,14 @@ func main() {
 	r := gin.Default()
 	initRouter(r)
 	// run on port config
-	r.Run(fmt.Sprintf(":%d", config.Config.Port))
+	r.Run(fmt.Sprintf(":%d", config.Config.DbPort))
 }
 
 func Init() error {
 	if err := repository.ConnectDB(); err != nil {
+		return err
+	}
+	if err := repository.ConnectRDB(); err != nil {
 		return err
 	}
 	return nil

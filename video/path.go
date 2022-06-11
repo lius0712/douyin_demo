@@ -16,11 +16,11 @@ func GetCoverLocalPath(name string) string {
 }
 
 func GetVideoRemotePath(name string) string {
-	return config.Config.Url +
+	return config.Config.DbUrl +
 		filepath.ToSlash(filepath.Join(config.Config.RemoteVideoPath, fmt.Sprintf("%v.mp4", name)))
 }
 
 func GetCoverRemotePath(name string) string {
-	return config.Config.Url +
+	return config.Config.DbUrl +
 		filepath.ToSlash(filepath.Join(config.Config.RemoteVideoPath, fmt.Sprintf("%v.jpg", name)))
 }

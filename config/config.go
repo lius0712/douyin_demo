@@ -9,11 +9,17 @@ import (
 
 type Configs struct {
 	PublicAddr      string `yaml:"public_address"`
-	Port            int    `yaml:"port"`
+	DbPort          int    `yaml:"db_port"`
 	MySQLDSN        string `yaml:"mysql_dsn"`
 	LocalVideoPath  string `yaml:"local_video_path"`
 	RemoteVideoPath string `yaml:"remote_video_path"`
-	Url             string
+	RedisAddr       string `yaml:"redis_address"`
+	RdbPort         int    `yaml:"rdb_port"`
+	RdbPwd          string `yaml:"rdb_pwd"`
+	RdbNum          int    `yaml:"rdb_num"`
+	RdbPoolSize     int    `yaml:"rdb_pool_size"`
+	DbUrl           string
+	RdbUrl          string
 }
 
 var Config Configs
@@ -30,5 +36,6 @@ func init() {
 		panic(err)
 	}
 
-	Config.Url = fmt.Sprintf("http://%s:%d/", Config.PublicAddr, Config.Port)
+	Config.DbUrl = fmt.Sprintf("http://%s:%d/", Config.PublicAddr, Config.DbPort)
+	Config.RdbUrl = fmt.Sprintf("%s:%d", Config.RedisAddr, Config.RdbPort)
 }

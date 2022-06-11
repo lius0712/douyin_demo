@@ -1,8 +1,11 @@
 package repository
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -10,9 +13,11 @@ import (
 	"io/ioutil"
 
 	"github.com/RaymondCode/simple-demo/config"
+	"github.com/go-redis/redis/v8"
 )
 
 var DB *gorm.DB
+var RDB *redis.Client
 
 func ConnectDB() error {
 
@@ -25,6 +30,33 @@ func ConnectDB() error {
 
 	DB = db
 
+	return err
+}
+
+//连接Redis
+func ConnectRDB() error {
+
+	fmt.Println(config.Config.RdbUrl)
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     config.Config.RdbUrl,
+		Password: config.Config.RdbPwd,
+		DB:       config.Config.RdbNum,
+		PoolSize: config.Config.RdbPoolSize, //连接池大小
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := rdb.Ping(ctx).Result()
+
+	if err != nil {
+		panic(err)
+	}
+
+	RDB = rdb
+	ctx = context.Background()
+	rdb.Set(ctx, "zwk", 123456, 0)
 	return err
 }
 

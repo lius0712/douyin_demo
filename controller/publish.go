@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/service"
@@ -62,10 +63,12 @@ func Publish(c *gin.Context) {
 		})
 		return
 	}
+	now := time.Now()
 
 	videoInsertService := service.VideoInsertInfo{
-		Author: user.Name,
-		Title:  title,
+		Author:     user.Name,
+		Title:      title,
+		CreateDate: now.Format("15:04:05"),
 	}
 
 	vid, err := videoInsertService.VideoInsert()

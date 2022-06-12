@@ -6,6 +6,7 @@ type Video struct {
 	Title         string `gorm:"column:title"`
 	FavoriteCount int64  `gorm:"column:favorite_count"`
 	CommentCount  int64  `gorm:"column:comment_count"`
+	CreateDate    string `gorm:"column:create_time"`
 }
 
 func (Video) TableName() string {

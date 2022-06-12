@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"gorm.io/gorm"
 	"sync"
 
 	"github.com/RaymondCode/simple-demo/entity"
@@ -19,11 +20,10 @@ func NewFavoriteDao() *FavoriteDao {
 	return favoriteDao
 }
 
-
 func (c *FavoriteDao) FavoriteVideo(uid int64, vid int64) error {
 	var fav entity.Favorite
-	err := DB.Where(&entity.Favorite{Uid: uid, Vid: vid}).Take(&fav).Error
-	if err != nil {
+	err := DB.Where(&entity.Favorite{Uid: uid, Vid: vid}).Find(&fav).Error
+	if err == nil || err == gorm.ErrRecordNotFound {
 		fav.Uid = uid
 		fav.Vid = vid
 		err = DB.Create(&fav).Error
@@ -60,6 +60,9 @@ func (c *FavoriteDao) QueryFavoriteInfoByUserId(userId int64) ([]entity.Video, e
 
 func (c *FavoriteDao) QueryFavoriteInfo(userId int64, videoId int64) (entity.Favorite, error) {
 	var fav entity.Favorite
-	err := DB.Where(&entity.Favorite{Uid: userId, Vid: videoId}).Take(&fav).Error
+	err := DB.Where(&entity.Favorite{Uid: userId, Vid: videoId}).Find(&fav).Error
+	if err == gorm.ErrRecordNotFound {
+		return fav, nil
+	}
 	return fav, err
 }

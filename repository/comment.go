@@ -47,7 +47,7 @@ func (c *CommentDao) DeleteCommentByCid(cid int64) error {
 
 func (c *CommentDao) QueryCommentInfoByVideoId(videoId int64) ([]entity.Comment, error) {
 	var comment []entity.Comment
-	err := DB.Where(&entity.Comment{Vid: videoId}).Find(&comment).Error
+	err := DB.Where(&entity.Comment{Vid: videoId}).Order("create_date DESC").Find(&comment).Error
 	return comment, err
 }
 

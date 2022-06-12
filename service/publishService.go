@@ -6,10 +6,11 @@ import (
 )
 
 type VideoInsertInfo struct {
-	Author    string
-	PlayerUrl string
-	CoverUrl  string
-	Title     string
+	Author     string
+	PlayerUrl  string
+	CoverUrl   string
+	Title      string
+	CreateDate string
 }
 
 type VideoListByName struct {
@@ -21,6 +22,7 @@ func (v *VideoInsertInfo) VideoInsert() (int64, error) {
 	var video entity.Video
 	video.Author = v.Author
 	video.Title = v.Title
+	video.CreateDate = v.CreateDate
 
 	err := repository.NewVideoDao().VideoInsert(&video)
 	return video.ID, err

@@ -5,5 +5,6 @@ CREATE TABLE t_video (
 	favorite_count int COMMENT '喜爱数',
     comment_count int COMMENT '评论数',
 	title varchar(120) COMMENT '视频标题',
+	create_time time COMMENT '视频创建时间',
 	PRIMARY KEY (vid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

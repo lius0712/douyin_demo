@@ -4,6 +4,6 @@ CREATE TABLE t_comment (
 	video_uid INT NOT NULL COMMENT '发布视频用户id',
 	comment_uid INT NOT NULL COMMENT '评论用户id',
 	comment varchar(100) COMMENT '评论内容',
-	create_date varchar(40) COMMENT '评论时间',
+	create_date time COMMENT '评论时间',
 	PRIMARY KEY (cid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

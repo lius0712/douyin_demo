@@ -48,7 +48,7 @@ func CommentAction(c *gin.Context) {
 			UserId:     entityUser.ID,
 			VideoId:    videoId,
 			Comment:    text,
-			CreateDate: now.Format("2006-01-02 15:04"),
+			CreateDate: now.Format("15:04:05"),
 		}
 		errInsert := commentInsertInfo.CommentInsert()
 		if errInsert != nil {

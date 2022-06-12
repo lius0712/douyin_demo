@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/repository"
-	"gorm.io/gorm"
 )
 
 type RelationInfo struct {
@@ -17,19 +16,21 @@ func (r *RelationInfo) RelationAction() error {
 	var relation entity.Relation
 	relation.FromUid = r.FromUid
 	relation.ToUid = r.ToUid
-	err := repository.DB.Create(&relation).Error
+	err := repository.NewRelationDao().RelationAction(&relation)
 
 	if err != nil {
 		return err
 	}
 
-	err = r.UserFollowerCountInc(1)
+	err = repository.NewRelationDao().UserFollowerCountInc(r.ToUid, 1)
+	//err = r.UserFollowerCountInc(1)
 
 	if err != nil {
 		return err
 	}
 
-	err = r.UserFollowerCountInc(1)
+	err = repository.NewRelationDao().UserFollowCountInc(r.FromUid, 1)
+	//err = r.UserFollowCountInc(1)
 	return err
 }
 
@@ -43,96 +44,35 @@ func (r *RelationInfo) UnRelationAction() error {
 		return err
 	}
 
-	err = r.UserFollowerCountInc(-1)
+	err = repository.NewRelationDao().UserFollowerCountInc(r.ToUid, -1)
+	//err = r.UserFollowerCountInc(-1)
 
 	if err != nil {
 		return err
 	}
 
-	err = r.UserFollowerCountInc(-1)
-	return err
-}
-
-func (r *RelationInfo) UserFollowCountInc(count int64) error {
-	var user entity.User
-	user.ID = r.FromUid
-	err := repository.DB.Transaction(func(tx *gorm.DB) error {
-		err := tx.Find(&user, &user).Error
-		if err != nil {
-			return err
-		}
-		user.FollowCount += count
-		err = tx.Save(&user).Error
-		return err
-	})
-	return err
-}
-
-func (r *RelationInfo) UserFollowerCountInc(count int64) error {
-	var user entity.User
-	user.ID = r.ToUid
-	err := repository.DB.Transaction(func(tx *gorm.DB) error {
-		err := tx.Find(&user, &user).Error
-		if err != nil {
-			return err
-		}
-		user.FollowCount += count
-		err = tx.Save(&user).Error
-		return err
-	})
+	err = repository.NewRelationDao().UserFollowCountInc(r.FromUid, -1)
+	//err = r.UserFollowerCountInc(-1)
 	return err
 }
 
 // UserIsRelationed checks if the user has relationed the other user.
 
 func (r *RelationInfo) UserIsRelationed() bool {
-	var relation entity.Relation
-	relation.FromUid = r.FromUid
-	relation.ToUid = r.ToUid
-	err := repository.DB.Where(&relation).Take(&relation).Error
+	err := repository.NewRelationDao().UserIsRelationed(r.FromUid, r.ToUid)
 	return err == nil
 }
 
 //查找用户关注列表
 
 func (r *RelationInfo) UserFollowList() ([]entity.User, error) {
-	var relation []entity.Relation
-	var users []entity.User
-
-	err := repository.DB.Where(&entity.Relation{FromUid: r.FromUid}).Find(&relation).Error
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, rel := range relation {
-		u := entity.User{ID: rel.ToUid}
-		if err := repository.DB.Where(&u).Take(&u).Error; err != nil {
-			continue
-		}
-		users = append(users, u)
-	}
-	return users, nil
+	users, err := repository.NewRelationDao().UserFollowList(r.FromUid)
+	return users, err
 }
 
 //查找用户粉丝列表
 
 func (r *RelationInfo) UserFollowerList() ([]entity.User, error) {
-	var relation []entity.Relation
-	var users []entity.User
-
-	err := repository.DB.Where(&entity.Relation{ToUid: r.ToUid}).Find(&relation).Error
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, rel := range relation {
-		u := entity.User{ID: rel.FromUid}
-		if err := repository.DB.Where(&u).Take(&u).Error; err != nil {
-			continue
-		}
-		users = append(users, u)
-	}
-	return users, nil
+	users, err := repository.NewRelationDao().UserFollowerList(r.ToUid)
+	return users, err
 }

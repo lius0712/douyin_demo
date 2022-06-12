@@ -45,14 +45,13 @@ func (u *UserRegisterService) Register() (entity.User, error) {
 	user.Salt = salt.String()
 	user.Password = hashPasswd(u.Password, user.Salt)
 
-	err = repository.DB.Create(&user).Error
+	err = repository.NewUserDao().Register(&user)
 
 	return user, err
 }
 
 func (u *UserInfo) UserLogin() (entity.User, error) {
-	var user entity.User
-	err := repository.DB.Where(&entity.User{Name: u.Username}).First(&user).Error
+	user, err := repository.NewUserDao().UserInfoByName(u.Username)
 	if err != nil {
 		return user, errors.New("User does not exist")
 	}
@@ -67,15 +66,13 @@ func (u *UserInfo) UserLogin() (entity.User, error) {
 //根据用户名获取用户信息
 
 func (u *UserInfo) UserInfoByName() (entity.User, error) {
-	var user entity.User
-	err := repository.DB.Where(&entity.User{Name: u.Username}).First(&user).Error
+	user, err := repository.NewUserDao().UserInfoByName(u.Username)
 	return user, err
 }
 
 //根据用户id获取用户信息
 
 func (u *UserInfo) UserInfoByUid() (entity.User, error) {
-	var user entity.User
-	err := repository.DB.Where(&entity.User{ID: u.Uid}).First(&user).Error
+	user, err := repository.NewUserDao().UserInfoByUid(u.Uid)
 	return user, err
 }

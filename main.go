@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/RaymondCode/simple-demo/cache"
 	"log"
 	"os"
 
@@ -17,7 +16,7 @@ func main() {
 	}
 
 	//for example
-	cache.Set("name", "wwww", 0)
+	//cache.Set("name", "wwww", 0)
 
 	if len(os.Args) > 1 && os.Args[1] == "reset" {
 		err := repository.ResetDB()
@@ -38,8 +37,8 @@ func Init() error {
 	if err := repository.ConnectDB(); err != nil {
 		return err
 	}
-	if err := repository.ConnectRDB(); err != nil {
-		return err
-	}
+	//if err := repository.ConnectRDB(); err != nil {
+	//	return err
+	//}
 	return nil
 }

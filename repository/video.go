@@ -1,8 +1,10 @@
 package repository
 
 import (
-	"github.com/RaymondCode/simple-demo/entity"
 	"sync"
+
+	"github.com/RaymondCode/simple-demo/entity"
+	"gorm.io/gorm"
 )
 
 type VideoDao struct {
@@ -38,4 +40,20 @@ func (v *VideoDao) VideoInfoAll() ([]entity.Video, error) {
 	var video []entity.Video
 	err := DB.Find(&video).Error
 	return video, err
+}
+
+// VideoFavoriteInc in/decrements the favorite count of the video.
+func (f *VideoDao) VideoFavoriteInc(vid int64, count int64) error {
+	var video entity.Video
+	video.ID = vid
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		err := tx.Find(&video, &video).Error
+		if err != nil {
+			return err
+		}
+		video.FavoriteCount += count
+		err = tx.Save(&video).Error
+		return err
+	})
+	return err
 }

@@ -40,7 +40,7 @@ func (f *FavoriteService) UnFavorateAction() error {
 func (f *FavoriteService) UserIsFavorited() bool {
 	fdao := repository.NewFavoriteDao()
 	_, err := fdao.QueryFavoriteInfo(f.Uid, f.Vid)
-	return err != nil
+	return err == nil
 }
 
 // UserFavoritedVideos returns a list of videos favorited by the user.

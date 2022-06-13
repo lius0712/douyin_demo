@@ -28,7 +28,7 @@ func (r *RelationDao) UserIsRelationed(fromUid int64, toUid int64) error {
 	var relation entity.Relation
 	relation.FromUid = fromUid
 	relation.ToUid = toUid
-	err := DB.Where(&relation).Find(&relation).Error
+	err := DB.Where(&relation).Take(&relation).Error
 	return err
 }
 

@@ -112,10 +112,11 @@ func Login(c *gin.Context) {
 
 func UserInfo(c *gin.Context) {
 	//username := c.GetString("username")
-	userId := c.GetInt64("uid")
+	//userId := c.Query("user_id") //个人信息页用户id
+	loginId := c.GetInt64("uid") //登录用户id
 	var user entity.User
 	var err error
-	userInfo := service.UserInfo{Uid: userId}
+	userInfo := service.UserInfo{Uid: loginId}
 	user, err = userInfo.UserInfoByUid()
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, UserResponse{

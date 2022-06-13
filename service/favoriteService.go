@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/repository"
+	"gorm.io/gorm"
 )
 
 type FavoriteService struct {
@@ -40,6 +41,9 @@ func (f *FavoriteService) UnFavorateAction() error {
 func (f *FavoriteService) UserIsFavorited() bool {
 	fdao := repository.NewFavoriteDao()
 	_, err := fdao.QueryFavoriteInfo(f.Uid, f.Vid)
+	if err == gorm.ErrRecordNotFound {
+		return false
+	}
 	return err == nil
 }
 

@@ -60,9 +60,6 @@ func (c *FavoriteDao) QueryFavoriteInfoByUserId(userId int64) ([]entity.Video, e
 
 func (c *FavoriteDao) QueryFavoriteInfo(userId int64, videoId int64) (entity.Favorite, error) {
 	var fav entity.Favorite
-	err := DB.Where(&entity.Favorite{Uid: userId, Vid: videoId}).Find(&fav).Error
-	if err == gorm.ErrRecordNotFound {
-		return fav, nil
-	}
+	err := DB.Where(&entity.Favorite{Uid: userId, Vid: videoId}).Take(&fav).Error
 	return fav, err
 }

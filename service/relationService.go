@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/RaymondCode/simple-demo/entity"
 	"github.com/RaymondCode/simple-demo/repository"
+	"gorm.io/gorm"
 )
 
 type RelationInfo struct {
@@ -60,7 +61,10 @@ func (r *RelationInfo) UnRelationAction() error {
 
 func (r *RelationInfo) UserIsRelationed() bool {
 	err := repository.NewRelationDao().UserIsRelationed(r.FromUid, r.ToUid)
-	return err != nil
+	if err == gorm.ErrRecordNotFound {
+		return false
+	}
+	return err == nil
 }
 
 //查找用户关注列表

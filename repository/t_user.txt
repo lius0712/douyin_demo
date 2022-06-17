@@ -6,5 +6,6 @@ CREATE TABLE t_user (
 	salt CHAR(36) NOT NULL COMMENT '盐',
 	follow_count INT DEFAULT '0' COMMENT '关注总数',
 	follower_count INT DEFAULT '0' COMMENT '粉丝总数',
-	PRIMARY KEY (uid)
+	PRIMARY KEY (uid),
+	UNIQUE (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

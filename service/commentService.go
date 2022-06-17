@@ -22,13 +22,8 @@ func (c *CommentInfo) CommentInsert() error {
 	comment.Comment = c.Comment
 	comment.CreateDate = c.CreateDate
 
-	err := repository.NewCommentDao().CommentInsert(&comment)
+	err := repository.NewCommentDao().CommentInsert(c.VideoId, &comment)
 
-	if err != nil {
-		return err
-	}
-
-	err = repository.NewCommentDao().VideoCommentInc(1, c.VideoId)
 	return err
 }
 
@@ -41,14 +36,8 @@ func (c *CommentInfo) CommentInfoByVideoUidAndCommentUid() (entity.Comment, erro
 
 //通过commentId来删除评论内容
 
-func (c *CommentInfo) DeleteCommentByCid() error {
-	err := repository.NewCommentDao().DeleteCommentByCid(c.Cid)
-
-	if err != nil {
-		return err
-	}
-
-	err = repository.NewCommentDao().VideoCommentInc(-1, c.VideoId)
+func (c *CommentInfo) DeleteComment() error {
+	err := repository.NewCommentDao().DeleteComment(c.VideoId, c.Cid)
 
 	return err
 }

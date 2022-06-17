@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"gorm.io/gorm"
 	"sync"
+
+	"gorm.io/gorm"
 
 	"github.com/RaymondCode/simple-demo/entity"
 )
@@ -22,20 +23,53 @@ func NewFavoriteDao() *FavoriteDao {
 
 func (c *FavoriteDao) FavoriteVideo(uid int64, vid int64) error {
 	var fav entity.Favorite
-	err := DB.Where(&entity.Favorite{Uid: uid, Vid: vid}).Find(&fav).Error
-	if err == nil || err == gorm.ErrRecordNotFound {
+	var video entity.Video
+	video.ID = vid
+	err := DB.Transaction(func(tx *gorm.DB) error {
 		fav.Uid = uid
 		fav.Vid = vid
-		err = DB.Create(&fav).Error
-	}
+		err := DB.Create(&fav).Error
+
+		if err != nil {
+			return err
+		}
+
+		err = tx.Find(&video, &video).Error
+		if err != nil {
+			return err
+		}
+
+		video.FavoriteCount += 1
+		err = tx.Save(&video).Error
+		return err
+
+	})
+
 	return err
 }
 
 func (c *FavoriteDao) UnFavoriteVideo(uid int64, vid int64) error {
 	var fav entity.Favorite
-	fav.Uid = uid
-	fav.Vid = vid
-	err := DB.Delete(&fav, &fav).Error
+	var video entity.Video
+	video.ID = vid
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		err := DB.Delete(&fav, &fav).Error
+
+		if err != nil {
+			return err
+		}
+
+		err = tx.Find(&video, &video).Error
+		if err != nil {
+			return err
+		}
+
+		video.FavoriteCount -= 1
+		err = tx.Save(&video).Error
+		return err
+
+	})
+
 	return err
 }
 

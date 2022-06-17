@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"github.com/RaymondCode/simple-demo/service"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/RaymondCode/simple-demo/service"
+	"github.com/gin-gonic/gin"
 )
 
 type CommentListResponse struct {
@@ -88,7 +89,7 @@ func CommentAction(c *gin.Context) {
 			return
 		}
 		commentInfoDelete := service.CommentInfo{Cid: commentId, VideoId: videoId}
-		errDelete := commentInfoDelete.DeleteCommentByCid()
+		errDelete := commentInfoDelete.DeleteComment()
 
 		if errDelete != nil {
 			c.JSON(http.StatusOK, Response{

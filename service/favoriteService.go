@@ -13,26 +13,16 @@ type FavoriteService struct {
 // FavoriteAction adds the video to the user's favorite list and increments the video's favorite count by 1.
 func (f *FavoriteService) FavorateAction() error {
 	fdao := repository.NewFavoriteDao()
-	vdao := repository.NewVideoDao()
 
 	err := fdao.FavoriteVideo(f.Uid, f.Vid)
-	if err != nil {
-		return err
-	}
-	err = vdao.VideoFavoriteInc(f.Vid, 1)
 	return err
 }
 
 // UnFavoriteAction removes the video from the user's favorite list and decrements the video's favorite count by 1
 func (f *FavoriteService) UnFavorateAction() error {
 	fdao := repository.NewFavoriteDao()
-	vdao := repository.NewVideoDao()
 
 	err := fdao.UnFavoriteVideo(f.Uid, f.Vid)
-	if err != nil {
-		return err
-	}
-	err = vdao.VideoFavoriteInc(f.Vid, -1)
 	return err
 }
 

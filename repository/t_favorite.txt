@@ -2,5 +2,5 @@ DROP TABLE IF EXISTS `t_favorite`;
 CREATE TABLE t_favorite (
     vid INT COMMENT '视频id',
     uid INT COMMENT '用户id',
-    PRIMARY KEY (vid, uid)
+    PRIMARY KEY (uid, vid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

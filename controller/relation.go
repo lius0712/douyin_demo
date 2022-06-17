@@ -1,10 +1,11 @@
 package controller
 
 import (
-	"github.com/RaymondCode/simple-demo/service"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/RaymondCode/simple-demo/service"
+	"github.com/gin-gonic/gin"
 )
 
 type UserListResponse struct {
@@ -25,9 +26,9 @@ func RelationAction(c *gin.Context) {
 	actionType := c.Query("action_type") //关注1， 取消关注2
 
 	if actionType == "1" {
-		err = r.RelationAction()
+		err = r.FollowAction()
 	} else {
-		err = r.UnRelationAction()
+		err = r.UnFollowAction()
 	}
 
 	if err != nil {

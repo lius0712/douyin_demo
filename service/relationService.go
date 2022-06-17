@@ -12,47 +12,13 @@ type RelationInfo struct {
 
 //adds the relation to the user's relation list and increments the from_user's follow_count, And to_user's follower_count .
 
-func (r *RelationInfo) RelationAction() error {
-	var relation entity.Relation
-	relation.FromUid = r.FromUid
-	relation.ToUid = r.ToUid
-	err := repository.NewRelationDao().RelationAction(&relation)
-
-	if err != nil {
-		return err
-	}
-
-	err = repository.NewRelationDao().UserFollowerCountInc(r.ToUid, 1)
-	//err = r.UserFollowerCountInc(1)
-
-	if err != nil {
-		return err
-	}
-
-	err = repository.NewRelationDao().UserFollowCountInc(r.FromUid, 1)
-	//err = r.UserFollowCountInc(1)
+func (r *RelationInfo) FollowAction() error {
+	err := repository.NewRelationDao().FollowAction(r.FromUid, r.ToUid)
 	return err
 }
 
-func (r *RelationInfo) UnRelationAction() error {
-	var relation entity.Relation
-	relation.FromUid = r.FromUid
-	relation.ToUid = r.ToUid
-	err := repository.DB.Delete(&relation, &relation).Error
-
-	if err != nil {
-		return err
-	}
-
-	err = repository.NewRelationDao().UserFollowerCountInc(r.ToUid, -1)
-	//err = r.UserFollowerCountInc(-1)
-
-	if err != nil {
-		return err
-	}
-
-	err = repository.NewRelationDao().UserFollowCountInc(r.FromUid, -1)
-	//err = r.UserFollowerCountInc(-1)
+func (r *RelationInfo) UnFollowAction() error {
+	err := repository.NewRelationDao().UnFollowAction(r.FromUid, r.ToUid)
 	return err
 }
 

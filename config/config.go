@@ -8,6 +8,7 @@ import (
 )
 
 type Configs struct {
+	Mode            string `yaml:"mode"`
 	PublicAddr      string `yaml:"public_address"`
 	DbPort          int    `yaml:"db_port"`
 	MySQLDSN        string `yaml:"mysql_dsn"`
@@ -20,6 +21,15 @@ type Configs struct {
 	RdbPoolSize     int    `yaml:"rdb_pool_size"`
 	DbUrl           string
 	RdbUrl          string
+	*LogConfig      `yaml:"log"`
+}
+
+type LogConfig struct {
+	Level      string `yaml:"level"`
+	Filename   string `yaml:"filename"`
+	MaxSize    int    `yaml:"max_size"`
+	MaxAge     int    `yaml:"max_age"`
+	MaxBackups int    `yaml:"max_backups"`
 }
 
 var Config Configs

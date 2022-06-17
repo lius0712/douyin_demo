@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/RaymondCode/simple-demo/middleware"
 	"log"
 	"os"
 
@@ -34,9 +35,17 @@ func main() {
 }
 
 func Init() error {
+	// connect Mysql
 	if err := repository.ConnectDB(); err != nil {
 		return err
 	}
+	// init logger
+	if err := middleware.InitLogger(config.Config.LogConfig, config.Config.Mode); err != nil {
+		fmt.Printf("init logger failed, err:%v\n", err)
+		return err
+	}
+
+	// connect Redis
 	//if err := repository.ConnectRDB(); err != nil {
 	//	return err
 	//}

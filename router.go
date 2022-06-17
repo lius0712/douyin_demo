@@ -13,6 +13,8 @@ func initRouter(r *gin.Engine) {
 
 	// public directory is used to serve static resources
 	r.Static("/"+config.Config.RemoteVideoPath, config.Config.LocalVideoPath)
+	// log
+	r.Use(middleware.GinLogger(), middleware.GinRecovery(true))
 
 	apiRouter := r.Group("/douyin")
 

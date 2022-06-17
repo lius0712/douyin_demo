@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"go.uber.org/zap"
 	"os"
 	"strings"
 	"time"
@@ -26,7 +27,7 @@ func ConnectDB() error {
 	if err != nil {
 		panic(err)
 	}
-
+	zap.L().Info("Connect DB success")
 	DB = db
 	return err
 }
@@ -50,6 +51,7 @@ func ConnectRDB() error {
 		panic(err)
 	}
 
+	zap.L().Info("Connect Redis success")
 	RDB = rdb
 
 	return err
@@ -96,6 +98,6 @@ func ResetDB() error {
 			}
 		}
 	}
-
+	zap.L().Info("Reset DB success")
 	return nil
 }

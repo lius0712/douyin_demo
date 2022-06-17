@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"time"
@@ -37,6 +38,7 @@ func Publish(c *gin.Context) {
 	data, err := c.FormFile("data")
 
 	if err != nil {
+		zap.L().Info("视频数据获取失败！")
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
@@ -46,6 +48,7 @@ func Publish(c *gin.Context) {
 
 	uuid, err := uuid.NewRandom()
 	if err != nil {
+		zap.L().Info("uuid生成失败！")
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
@@ -57,6 +60,7 @@ func Publish(c *gin.Context) {
 	tmpPath := video.GetVideoLocalPath(tmpname)
 
 	if err := c.SaveUploadedFile(data, tmpPath); err != nil {
+		zap.L().Info("上传视频文件失败！")
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  err.Error(),
@@ -74,6 +78,7 @@ func Publish(c *gin.Context) {
 	vid, err := videoInsertService.VideoInsert()
 	if err != nil {
 		os.Remove(tmpPath)
+		zap.L().Info("保存视频至数据库失败！")
 		c.JSON(http.StatusOK, Response{
 			StatusCode: 1,
 			StatusMsg:  "insert mysql failed",

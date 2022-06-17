@@ -40,40 +40,40 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusOK, UserRegisterResponse{
 			Response: Response{StatusCode: 1, StatusMsg: "用户名已存在！"},
 		})
-	} else {
-		registerService := service.UserRegisterService{
-			Username: username,
-			Password: password,
-		}
-		u, err := registerService.Register()
-
-		if err != nil {
-			c.JSON(http.StatusOK, UserRegisterResponse{
-				Response: Response{StatusCode: 1, StatusMsg: "Insert failed"},
-			})
-		} else {
-			jwt := middleware.JwtAuth{
-				Username: username,
-				Uid:      u.ID,
-			}
-			token, err := jwt.GenToken()
-			if err != nil {
-				c.AbortWithStatusJSON(http.StatusOK, UserRegisterResponse{
-					Response: Response{StatusCode: 1, StatusMsg: err.Error()},
-				})
-				return
-			}
-			userInfo := service.UserInfo{
-				Username: username,
-			}
-			user, _ := userInfo.UserInfoByName()
-			c.JSON(http.StatusOK, UserRegisterResponse{
-				Response: Response{StatusCode: 0},
-				UserId:   user.ID,
-				Token:    token,
-			})
-		}
+		return
 	}
+	registerService := service.UserRegisterService{
+		Username: username,
+		Password: password,
+	}
+	u, err := registerService.Register()
+
+	if err != nil {
+		c.JSON(http.StatusOK, UserRegisterResponse{
+			Response: Response{StatusCode: 1, StatusMsg: "Insert failed"},
+		})
+		return
+	}
+	jwt := middleware.JwtAuth{
+		Username: username,
+		Uid:      u.ID,
+	}
+	token, err := jwt.GenToken()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, UserRegisterResponse{
+			Response: Response{StatusCode: 1, StatusMsg: err.Error()},
+		})
+		return
+	}
+	userInfo := service.UserInfo{
+		Username: username,
+	}
+	user, _ := userInfo.UserInfoByName()
+	c.JSON(http.StatusOK, UserRegisterResponse{
+		Response: Response{StatusCode: 0},
+		UserId:   user.ID,
+		Token:    token,
+	})
 }
 
 func Login(c *gin.Context) {
@@ -90,24 +90,23 @@ func Login(c *gin.Context) {
 			Response: Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
 		return
-	} else {
-		jwt := middleware.JwtAuth{
-			Username: username,
-			Uid:      user.ID,
-		}
-		token, err := jwt.GenToken()
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusOK, UserLoginResponse{
-				Response: Response{StatusCode: 1, StatusMsg: err.Error()},
-			})
-			return
-		}
-		c.JSON(http.StatusOK, UserLoginResponse{
-			Response: Response{StatusCode: 0},
-			UserId:   user.ID,
-			Token:    token,
-		})
 	}
+	jwt := middleware.JwtAuth{
+		Username: username,
+		Uid:      user.ID,
+	}
+	token, err := jwt.GenToken()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 1, StatusMsg: err.Error()},
+		})
+		return
+	}
+	c.JSON(http.StatusOK, UserLoginResponse{
+		Response: Response{StatusCode: 0},
+		UserId:   user.ID,
+		Token:    token,
+	})
 }
 
 func UserInfo(c *gin.Context) {
@@ -123,8 +122,6 @@ func UserInfo(c *gin.Context) {
 			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
 		})
 	} else {
-		//fmt.Println(user)
-		//user.Name = token
 
 		userDemo := UserByEntity(user)
 		userDemo.IsFollow = true //自己对自己默认设置已关注

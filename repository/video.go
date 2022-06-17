@@ -38,7 +38,7 @@ func (v *VideoDao) VideoInfoByName(username string) ([]entity.Video, error) {
 //从数据中查询所有视频,得到视频列表
 func (v *VideoDao) VideoInfoAll() ([]entity.Video, error) {
 	var video []entity.Video
-	err := DB.Find(&video).Error
+	err := DB.Order("create_date DESC").Limit(30).Find(&video).Error
 	return video, err
 }
 

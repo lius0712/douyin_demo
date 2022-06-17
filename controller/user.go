@@ -82,7 +82,7 @@ func Login(c *gin.Context) {
 
 	userLogin := service.UserInfo{
 		Username: username,
-		Password: password, //密码明文，后续优化进行加密
+		Password: password,
 	}
 	user, err := userLogin.UserLogin()
 	if err != nil {

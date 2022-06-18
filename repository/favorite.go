@@ -53,6 +53,8 @@ func (c *FavoriteDao) UnFavoriteVideo(uid int64, vid int64) error {
 	var video entity.Video
 	video.ID = vid
 	err := DB.Transaction(func(tx *gorm.DB) error {
+		fav.Uid = uid
+		fav.Vid = vid
 		err := DB.Delete(&fav, &fav).Error
 
 		if err != nil {

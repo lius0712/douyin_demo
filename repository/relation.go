@@ -51,7 +51,10 @@ func (r *RelationDao) FollowAction(from, to int64) error {
 func (r *RelationDao) UnFollowAction(from, to int64) error {
 	var user entity.User
 	err := DB.Transaction(func(tx *gorm.DB) error {
-		err := tx.Delete(&entity.Relation{FromUid: from, ToUid: to}).Error
+		var relation entity.Relation
+		relation.FromUid = from
+		relation.ToUid = to
+		err := tx.Delete(&relation, &relation).Error
 		if err != nil {
 			return err
 		}

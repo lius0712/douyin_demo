@@ -1,9 +1,10 @@
 package repository
 
 import (
+	"sync"
+
 	"github.com/RaymondCode/simple-demo/entity"
 	"gorm.io/gorm"
-	"sync"
 )
 
 type RelationDao struct {
@@ -19,8 +20,59 @@ func NewRelationDao() *RelationDao {
 	return relationDao
 }
 
-func (r *RelationDao) RelationAction(relation *entity.Relation) error {
-	err := DB.Create(&relation).Error
+func (r *RelationDao) FollowAction(from, to int64) error {
+	var user entity.User
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		err := tx.Create(&entity.Relation{FromUid: from, ToUid: to}).Error
+		if err != nil {
+			return err
+		}
+		err = tx.Find(&user, &entity.User{ID: from}).Error
+		if err != nil {
+			return err
+		}
+		user.FollowCount += 1
+		err = tx.Save(&user).Error
+		if err != nil {
+			return err
+		}
+
+		err = tx.Find(&user, &entity.User{ID: to}).Error
+		if err != nil {
+			return err
+		}
+		user.FollowerCount += 1
+		err = tx.Save(&user).Error
+		return err
+	})
+	return err
+}
+
+func (r *RelationDao) UnFollowAction(from, to int64) error {
+	var user entity.User
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		err := tx.Delete(&entity.Relation{FromUid: from, ToUid: to}).Error
+		if err != nil {
+			return err
+		}
+		err = tx.Find(&user, &entity.User{ID: from}).Error
+		if err != nil {
+			return err
+		}
+		user.FollowCount -= 1
+		err = tx.Save(&user).Error
+		if err != nil {
+			return err
+		}
+
+		err = tx.Find(&user, &entity.User{ID: to}).Error
+		if err != nil {
+			return err
+		}
+		user.FollowerCount -= 1
+		err = tx.Save(&user).Error
+		return err
+	})
 	return err
 }
 

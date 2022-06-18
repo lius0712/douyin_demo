@@ -1,9 +1,10 @@
 package repository
 
 import (
+	"sync"
+
 	"github.com/RaymondCode/simple-demo/entity"
 	"gorm.io/gorm"
-	"sync"
 )
 
 type CommentDao struct {
@@ -21,8 +22,23 @@ func NewCommentDao() *CommentDao {
 
 //将评论插入数据库
 
-func (c *CommentDao) CommentInsert(comment *entity.Comment) error {
-	err := DB.Create(&comment).Error
+func (c *CommentDao) CommentInsert(videoId int64, comment *entity.Comment) error {
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var video entity.Video
+		video.ID = videoId
+		err := DB.Create(&comment).Error
+		if err != nil {
+			return err
+		}
+
+		err = tx.Find(&video, &video).Error
+		if err != nil {
+			return err
+		}
+		video.CommentCount += 1
+		err = tx.Save(&video).Error
+		return err
+	})
 	return err
 }
 
@@ -36,10 +52,27 @@ func (c *CommentDao) CommentInfoByVideoUidAndCommentUid(videoUid int64, commentU
 
 //通过commentId来删除评论内容
 
-func (c *CommentDao) DeleteCommentByCid(cid int64) error {
-	var comment entity.Comment
-	comment.ID = cid
-	err := DB.Delete(&comment, &comment).Error
+func (c *CommentDao) DeleteComment(vid int64, cid int64) error {
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var comment entity.Comment
+		comment.ID = cid
+		err := DB.Delete(&comment, &comment).Error
+
+		if err != nil {
+			return err
+		}
+
+		var video entity.Video
+		video.ID = vid
+		err = tx.Find(&video, &video).Error
+		if err != nil {
+			return err
+		}
+
+		video.CommentCount -= 1
+		err = tx.Save(&video).Error
+		return err
+	})
 	return err
 }
 
